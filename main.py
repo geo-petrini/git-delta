@@ -1,3 +1,4 @@
+import json
 from git import Repo
 from datetime import datetime
 
@@ -67,11 +68,28 @@ def print_commit_history(commit_history):
         print("-" * 80)
 
 
-# Esempio di utilizzo
-if __name__ == "__main__":
-    repo_path = "/percorso/del/tuo/repository"
+def load_config(file_path):
     try:
-        history = get_git_changes(repo_path)
-        print_commit_history(history)
-    except ValueError as e:
-        print(e)
+        with open(file_path, "r") as config_file:
+            config = json.load(config_file)
+            return config.get("repositories", [])
+    except FileNotFoundError:
+        print(f"File di configurazione {file_path} non trovato.")
+        return []
+    except json.JSONDecodeError:
+        print(f"Errore nel parsing del file di configurazione {file_path}.")
+        return []    
+
+if __name__ == "__main__":
+    config_path = "config.json"
+    repositories = load_config(config_path)
+
+    if not repositories:
+        print("Nessun repository trovato nel file di configurazione.")
+    else:
+        for repo_path in repositories:
+            try:
+                history = get_git_changes(repo_path)
+                print_commit_history(repo_path, history)
+            except ValueError as e:
+                print(e)
