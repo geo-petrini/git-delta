@@ -47,7 +47,8 @@ def get_git_changes(repo_path):
     return commit_history
 
 
-def print_commit_history(commit_history):
+def print_commit_history(repo_path, commit_history):
+    print(f"Repository: {repo_path}")
     for commit in commit_history:
         print(f"Commit: {commit['hash']}")
         print(f"Author: {commit['author']}")
@@ -67,6 +68,7 @@ def print_commit_history(commit_history):
             print(f"  File: {file}")
             print(diff)
         print("-" * 80)
+    print("\n")
 
 
 def load_config(file_path):
