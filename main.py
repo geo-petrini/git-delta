@@ -61,7 +61,7 @@ def print_history(repo_path, changes):
         print("-" * 80)
     print("\n")
 
-def generate_html(repo_path, changes, output_path="output.html", template='blaze'):
+def generate_html(repo_path, changes, output_path="output.html", template='bs'):
     # Load the template
     env = Environment(loader=FileSystemLoader('./templates'))
     template_filename = os.path.join( f'{template}_template.html')
@@ -109,6 +109,6 @@ if __name__ == "__main__":
                     # print_commit_history(repo_path, history)
                     changes = get_changes(repo_path)
                     print_history(repo_path, changes)
-                    generate_html(repo_path, changes, output_path=f"{repo_path.replace('/', '_')}_history.html", template = 'bs')
+                    generate_html(repo_path, changes, output_path=f"{repo_path.replace('/', '_')}_history.html")
                 except ValueError as e:
                     print(e)
