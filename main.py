@@ -1,8 +1,7 @@
 import os
 import json
 from datetime import datetime
-from git import Repo
-from pydriller import Repository, Git
+from pydriller import Repository
 import benedict
 
 def get_changes(repo_path):
