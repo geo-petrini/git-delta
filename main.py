@@ -1,6 +1,7 @@
 import os
 import json
 from git import Repo
+from pydriller import Repository
 from datetime import datetime
 
 def get_git_changes(repo_path):
@@ -40,7 +41,13 @@ def get_git_changes(repo_path):
                 commit_info["modified_files"].append(change.a_path)
 
                 # Aggiungi le differenze del file
-                commit_info["file_differences"][change.a_path] = change.diff.decode("utf-8", errors="ignore")
+                # commit_info["file_differences"][change.a_path] = change.diff.decode("utf-8", errors="ignore")
+                try:
+                    diff_content = change.diff.decode("utf-8", errors="ignore")
+                    commit_info["file_differences"][change.a_path] = diff_content
+                    print(f">{change.a_path}: {diff_content}")
+                except Exception as e:
+                    commit_info["file_differences"][change.a_path] = f"Errore nel recupero delle differenze: {e}"                
 
         commit_history.append(commit_info)
 
@@ -70,6 +77,19 @@ def print_commit_history(repo_path, commit_history):
         print("-" * 80)
     print("\n")
 
+def get_changes(repo_path):
+    print(f"Repository: {repo_path}")
+    for commit in Repository(repo_path).traverse_commits():
+        print(f'Commit: {commit.hash}')
+        print(f'Message: {commit.msg}')
+        print(f'Author: {commit.author.name}')
+
+        for file in commit.modified_files:
+            print(f'{file.filename}')
+            print(file.diff)
+                  
+        print("-" * 80)
+    print("\n")            
 
 def load_config(file_path):
     try:
@@ -100,7 +120,8 @@ if __name__ == "__main__":
         for repo_path in repositories:
             if check_folder(repo_path):
                 try:
-                    history = get_git_changes(repo_path)
-                    print_commit_history(repo_path, history)
+                    # history = get_git_changes(repo_path)
+                    # print_commit_history(repo_path, history)
+                    get_changes(repo_path)
                 except ValueError as e:
                     print(e)
