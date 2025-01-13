@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Repository History</title>
+    <link rel="stylesheet" href="https://unpkg.com/@blaze/css@x.x.x/dist/blaze/blaze.css">
+    <script type="module" src="https://unpkg.com/@blaze/atoms@x.x.x/dist/blaze-atoms/blaze-atoms.esm.js"></script>
+    <script nomodule="" src="https://unpkg.com/@blaze/atoms@x.x.x/dist/blaze-atoms/blaze-atoms.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .timeline {
+            margin: 20px;
+        }
+        .added {
+            color: green;
+        }
+        .deleted {
+            color: red;
+        }
+        .modified {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="c-heading u-xlarge">Git Repository History</h1>
+    <h2 class="c-heading u-large">Repository: {{ repo_path }}</h2>
+
+    <div class="c-timeline timeline">
+        {% for commit in changes %}
+        <blaze-timeline loading>
+            <blaze-timeline-item>
+                <span class="u-xlarge">{{ commit.date }}</span>
+                
+                <blaze-accordion>
+                    <blaze-accordion-pane>
+                        <blaze-card>
+                            <blaze-card-header>
+                                <h3 class="c-heading">Commit: {{ commit.hash }}</h2>
+                            </blaze-card-header>
+                            <blaze-card-body>
+                                <p><strong>Author:</strong> {{ commit.author }}</p>
+                                <p><strong>Date:</strong> {{ commit.date }}</p>
+                                <p><strong>Message:</strong> {{ commit.message }}</p>
+                            </blaze-card-body>
+                            <blaze-card-footer> 
+                                <h3 class="c-heading">Files added</h3>
+                                <ul>
+                                {% for file in commit.files.added %}
+                                    <li><span class="added">{{file}}</span></li>
+                                {% endfor %}
+                                </ul>
+                                
+                                <h3 class="c-heading">Files deleted</h3>
+                                <ul>
+                                {% for file in commit.files.deleted %}
+                                    <li><span class="added">{{file}}</span></li>
+                                {% endfor %}
+                                </ul>
+
+                                <h3 class="c-heading">Files modified</h3>
+                                <ul>
+                                    {% for file, diff in commit.files.modified.items() %}
+                                    <li><strong class="modified">{{ file }}</strong></li>
+                                    <blaze-accordion>
+                                        <blaze-accordion-pane>
+                                            <pre>{{ diff }}</pre>
+                                        </blaze-accordion>
+                                    </blaze-accordion>
+                                    {% endfor %}
+                                </ul>
+                            </blaze-card-footer>                       
+                        </blaze-card>  
+                    </blaze-accordion-pane>
+                </blaze-accordion>
+
+            </blaze-timeline-item>
+        </blaze-timeline>
+
+        {% endfor %}
+    </div>
+</body>
+</html>

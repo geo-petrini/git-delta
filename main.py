@@ -3,13 +3,16 @@ import json
 from datetime import datetime
 from pydriller import Repository
 import benedict
+from jinja2 import Environment, FileSystemLoader
 
 def get_changes(repo_path):
     changes = []
     # gr = Git(repo_path)
     print(f"Reading repository: {repo_path}")
-    for commit in Repository(repo_path).traverse_commits():
+    repo = Repository(repo_path)
+    for commit in repo.traverse_commits():
         changes.append( _get_commit_changes(commit) )
+
     return changes
 
 def _get_commit_changes(commit):
@@ -56,7 +59,21 @@ def print_history(repo_path, changes):
             print(f"{commit.files.modified[file]}")
 
         print("-" * 80)
-    print("\n")    
+    print("\n")
+
+def generate_html(repo_path, changes, output_path="output.html", template='blaze'):
+    # Load the template
+    env = Environment(loader=FileSystemLoader('.'))
+    template = env.get_template(f'{template}_template.html')
+
+    # Render the template with data
+    html_content = template.render(repo_path=repo_path, changes=changes)
+
+    # Write to file
+    with open(output_path, "w", encoding="utf-8") as html_file:
+        html_file.write(html_content)
+
+    print(f"HTML report generated at {output_path}")    
 
 def load_config(file_path):
     try:
@@ -91,5 +108,6 @@ if __name__ == "__main__":
                     # print_commit_history(repo_path, history)
                     changes = get_changes(repo_path)
                     print_history(repo_path, changes)
+                    generate_html(repo_path, changes, output_path=f"{repo_path.replace('/', '_')}_history.html")
                 except ValueError as e:
                     print(e)
