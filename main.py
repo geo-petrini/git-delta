@@ -24,13 +24,13 @@ def _get_commit_changes(commit):
     cc.date = commit.author_date
 
     cc.files = {}
-    cc.files.added = []
+    cc.files.added = {}
     cc.files.deleted = []
     cc.files.modified = {}
 
     for file in commit.modified_files:
         if file.change_type.name == "ADD":
-            cc.files.added.append(file.filename)
+            cc.files.added[file.filename] = file.source_code
         if file.change_type.name == "DELETE":
             cc.files.deleted.append(file.filename)
         if file.change_type.name == "MODIFY":
@@ -109,6 +109,6 @@ if __name__ == "__main__":
                     # print_commit_history(repo_path, history)
                     changes = get_changes(repo_path)
                     print_history(repo_path, changes)
-                    generate_html(repo_path, changes, output_path=f"{repo_path.replace('/', '_')}_history.html", template = 'tw')
+                    generate_html(repo_path, changes, output_path=f"{repo_path.replace('/', '_')}_history.html", template = 'bs')
                 except ValueError as e:
                     print(e)
