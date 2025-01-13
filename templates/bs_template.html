@@ -24,13 +24,11 @@
         <div class="row">
             <div class="col-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
                 <h2>Repository: {{ repo_path }}</h2>
-                <ul id="list-commits" class="nav flex-column">
-                    {% for commit in changes %}
-                    <li class="nav-item">
-                        <h2><a class="btn-link" href="#item-{{commit.hash}}"><span class="badge text-bg-outline-primary">{{ commit.date }}</span></a></h2>
-                    </li>
-                    {% endfor %}
-                </ul>           
+                <nav id="list-commits" class="nav nav-pills flex-column">
+                {% for commit in changes %}
+                    <a class="nav-link" href="#item-{{commit.hash}}">{{ commit.date }}</a>
+                {% endfor %}
+                </nav>           
             </div>
          
             <div class="col">
@@ -74,7 +72,6 @@
                                             </tr>
                                         </table>
                                     </div>
-                                
                                 </div>
                             </div>
                         </li>
