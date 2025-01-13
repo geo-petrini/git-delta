@@ -63,8 +63,9 @@ def print_history(repo_path, changes):
 
 def generate_html(repo_path, changes, output_path="output.html", template='blaze'):
     # Load the template
-    env = Environment(loader=FileSystemLoader('.'))
-    template = env.get_template(f'{template}_template.html')
+    env = Environment(loader=FileSystemLoader('./templates'))
+    template_filename = os.path.join( f'{template}_template.html')
+    template = env.get_template(template_filename)
 
     # Render the template with data
     html_content = template.render(repo_path=repo_path, changes=changes)
