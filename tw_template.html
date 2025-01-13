@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dim">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Repository History</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <h1>Git Repository History</h1>
+    <h2>Repository: {{ repo_path }}</h2>
+
+    <ul class="timeline timeline-vertical">
+        {% for commit in changes %}
+        <li>
+            <div class="timeline-start">{{ commit.date }}</div>
+                <div class="timeline-middle">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        class="h-5 w-5">
+                        <path
+                            fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clip-rule="evenodd" />
+                    </svg>            
+                </div>
+            <div class="timeline-end timeline-box">
+                <div class="collapse collapse-plus bg-base-200">
+                    <input type="radio" name="my-accordion-3"/>
+                    <div class="collapse-title text-xl font-medium">{{ commit.message }}</div>
+                    <div class="collapse-content">
+                        <div class="card bg-base-100 w-300 shadow-xl glass">
+                            <div class="card-body">
+                                <h2 class="card-title">Commit: {{ commit.hash }}</h2>
+                                <p><strong>Author:</strong> {{ commit.author }}</p>
+                                <p><strong>Date:</strong> {{ commit.date }}</p>
+                                <p><strong>Message:</strong> {{ commit.message }}</p>
+
+                                <h3>Files added</h3>
+                                <ul>
+                                {% for file in commit.files.added %}
+                                    <li><span class="added">{{file}}</span></li>
+                                {% endfor %}
+                                </ul>
+                                
+                                <h3>Files deleted</h3>
+                                <ul>
+                                {% for file in commit.files.deleted %}
+                                    <li><span class="added">{{file}}</span></li>
+                                {% endfor %}
+                                </ul>
+          
+                                <h3>Files modified</h3>
+                                <ul>
+                                {% for file, diff in commit.files.modified.items() %}
+                                <li><strong class="modified">{{ file }}</strong></li>
+                                <div class="mockup-code">
+                                  <pre>{{ diff }}</pre>
+                                </div>
+                                {% endfor %}   
+                                </ul>                             
+                            </div>
+                        </div>
+
+
+                    </div>
+                  </div>
+
+            </div>
+            <hr />
+        </li>
+        {% endfor %}
+        
+      </ul>
+    </div>
+</body>
+</html>

@@ -108,6 +108,6 @@ if __name__ == "__main__":
                     # print_commit_history(repo_path, history)
                     changes = get_changes(repo_path)
                     print_history(repo_path, changes)
-                    generate_html(repo_path, changes, output_path=f"{repo_path.replace('/', '_')}_history.html")
+                    generate_html(repo_path, changes, output_path=f"{repo_path.replace('/', '_')}_history.html", template = 'tw')
                 except ValueError as e:
                     print(e)
