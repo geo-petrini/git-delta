@@ -1,3 +1,4 @@
+import os
 import json
 from git import Repo
 from datetime import datetime
@@ -79,6 +80,13 @@ def load_config(file_path):
     except json.JSONDecodeError:
         print(f"Errore nel parsing del file di configurazione {file_path}.")
         return []    
+    
+def check_folder(repo_path):
+    if os.path.exists(repo_path) and os.path.isdir(repo_path):
+        return True
+    else:
+        print(f"Path: {repo_path} does not exists or is not a directory")
+        return False
 
 if __name__ == "__main__":
     config_path = "config.json"
@@ -88,8 +96,9 @@ if __name__ == "__main__":
         print("Nessun repository trovato nel file di configurazione.")
     else:
         for repo_path in repositories:
-            try:
-                history = get_git_changes(repo_path)
-                print_commit_history(repo_path, history)
-            except ValueError as e:
-                print(e)
+            if check_folder(repo_path):
+                try:
+                    history = get_git_changes(repo_path)
+                    print_commit_history(repo_path, history)
+                except ValueError as e:
+                    print(e)
