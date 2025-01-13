@@ -1,95 +1,63 @@
 import os
 import json
-from git import Repo
-from pydriller import Repository
 from datetime import datetime
-
-def get_git_changes(repo_path):
-    # Inizializza il repository
-    repo = Repo(repo_path)
-    if repo.bare:
-        raise ValueError("La directory specificata non è un repository Git valido.")
-
-    # Ottieni tutti i commit
-    commits = list(repo.iter_commits())
-    commit_history = []
-
-    for i in range(len(commits) - 1):
-        current_commit = commits[i]
-        previous_commit = commits[i + 1]
-
-        commit_info = {
-            "hash": current_commit.hexsha,
-            "author": current_commit.author.name,
-            "date": datetime.fromtimestamp(current_commit.committed_date).strftime("%Y-%m-%d %H:%M:%S"),
-            "message": current_commit.message.strip(),
-            "added_files": [],
-            "removed_files": [],
-            "modified_files": [],
-            "file_differences": {}
-        }
-
-        # Ottieni le differenze tra i commit
-        diff = current_commit.diff(previous_commit, create_patch=True)
-
-        for change in diff:
-            if change.new_file:
-                commit_info["added_files"].append(change.b_path)
-            elif change.deleted_file:
-                commit_info["removed_files"].append(change.a_path)
-            elif change.change_type == "M":
-                commit_info["modified_files"].append(change.a_path)
-
-                # Aggiungi le differenze del file
-                # commit_info["file_differences"][change.a_path] = change.diff.decode("utf-8", errors="ignore")
-                try:
-                    diff_content = change.diff.decode("utf-8", errors="ignore")
-                    commit_info["file_differences"][change.a_path] = diff_content
-                    print(f">{change.a_path}: {diff_content}")
-                except Exception as e:
-                    commit_info["file_differences"][change.a_path] = f"Errore nel recupero delle differenze: {e}"                
-
-        commit_history.append(commit_info)
-
-    return commit_history
-
-
-def print_commit_history(repo_path, commit_history):
-    print(f"Repository: {repo_path}")
-    for commit in commit_history:
-        print(f"Commit: {commit['hash']}")
-        print(f"Author: {commit['author']}")
-        print(f"Date: {commit['date']}")
-        print(f"Message: {commit['message']}\n")
-        print("Added Files (+):")
-        for file in commit["added_files"]:
-            print(f"  + {file}")
-        print("Removed Files (-):")
-        for file in commit["removed_files"]:
-            print(f"  - {file}")
-        print("Modified Files:")
-        for file in commit["modified_files"]:
-            print(f"  * {file}")
-        print("\nFile Differences:")
-        for file, diff in commit["file_differences"].items():
-            print(f"  File: {file}")
-            print(diff)
-        print("-" * 80)
-    print("\n")
+from git import Repo
+from pydriller import Repository, Git
+import benedict
 
 def get_changes(repo_path):
-    print(f"Repository: {repo_path}")
+    changes = []
+    # gr = Git(repo_path)
+    print(f"Reading repository: {repo_path}")
     for commit in Repository(repo_path).traverse_commits():
-        print(f'Commit: {commit.hash}')
-        print(f'Message: {commit.msg}')
-        print(f'Author: {commit.author.name}')
+        changes.append( _get_commit_changes(commit) )
+    return changes
 
-        for file in commit.modified_files:
-            print(f'{file.filename}')
-            print(file.diff)
-                  
+def _get_commit_changes(commit):
+    cc = benedict.BeneDict()
+
+    cc.hash = commit.hash
+    cc.message = commit.msg
+    cc.author = commit.author.name
+    cc.date = commit.author_date
+
+    cc.files = {}
+    cc.files.added = []
+    cc.files.deleted = []
+    cc.files.modified = {}
+
+    for file in commit.modified_files:
+        if file.change_type.name == "ADD":
+            cc.files.added.append(file.filename)
+        if file.change_type.name == "DELETE":
+            cc.files.deleted.append(file.filename)
+        if file.change_type.name == "MODIFY":
+            cc.files.modified[file.filename] = file.diff
+            # cc.files.differences.append(file.diff)
+              
+    return cc
+
+def print_history(repo_path, changes):
+    print(f"Repository: {repo_path}")
+    for commit in changes:
+        print(f"Commit: {commit.hash}")
+        print(f"Author: {commit.author}")
+        print(f"Date: {commit.date}")
+        print(f"Message: {commit.message}")
+        print(f"Added Files: {len(commit.files.added)}")
+        for file in commit.files.added:
+            print(f"+++ {file}")
+        
+        print(f"Deleted Files: {len(commit.files.deleted)}")
+        for file in commit.files.deleted:
+            print(f"--- {file}")
+        print(f"Modified Files: {len(commit.files.modified)}")
+        for file in commit.files.modified:
+            print(f"*** {file}")
+            print(f"{commit.files.modified[file]}")
+
         print("-" * 80)
-    print("\n")            
+    print("\n")    
 
 def load_config(file_path):
     try:
@@ -122,6 +90,7 @@ if __name__ == "__main__":
                 try:
                     # history = get_git_changes(repo_path)
                     # print_commit_history(repo_path, history)
-                    get_changes(repo_path)
+                    changes = get_changes(repo_path)
+                    print_history(repo_path, changes)
                 except ValueError as e:
                     print(e)
