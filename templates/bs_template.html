@@ -89,7 +89,19 @@
                             </div>
                             <div class="offcanvas-body">
                                 <div class="code">
-                                    <pre>{{ diff|e }}</pre>
+                                    <div class="code">
+                                        <pre class="m-0">
+{% set difflines = diff.split('\n') -%}
+{% for line in difflines -%}
+{% if line.startswith("[FILE TRUCATED]") -%} 
+<span class="text-info">{{ line|e -}}</span>
+{% else -%}
+<span>{{ line|e -}}</span>
+{% endif -%}
+{% endfor -%}
+                                        </pre>
+                                    </div>                                    
+                                    <!-- <pre>{{ diff|e }}</pre> -->
                                 </div>
                             </div>
                         </div>
