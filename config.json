@@ -1,7 +1,13 @@
 {
     "repositories": [
-        "/percorso/repository1",
-        "/percorso/repository2",
-        "."
+        "E:/Documents/progetti/2024-2025-306-s1/ArifiErisa/ProgettoMeteo",
+        "E:/Documents/progetti/2024-2025-306-s1/ArzaniChristian/Amazon-Scraper",
+        "E:/Documents/progetti/2024-2025-306-s1/CasamattaAndrea/Progetto-QuizGame",
+        "E:/Documents/progetti/2024-2025-306-s1/ComesPaolo/QuizGame",
+        "E:/Documents/progetti/2024-2025-306-s1/HafligerAmos/AppMeteo",
+        "E:/Documents/progetti/2024-2025-306-s1/MonteiroAmaroMarco/ProgettoM306",
+        "E:/Documents/progetti/2024-2025-306-s1/NegriAndrea/ProgettoM306",
+        "E:/Documents/progetti/2024-2025-306-s1/RossiMatvej/Progetto-Audio",
+        "E:/Documents/progetti/2024-2025-306-s1/SciaraLeonardo/Quiz_Game"
     ]
 }
