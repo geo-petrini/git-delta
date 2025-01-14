@@ -22,7 +22,9 @@ def _get_commit_changes(commit):
     cc.hash = commit.hash
     cc.message = commit.msg
     cc.author = commit.author.name
-    cc.date = commit.author_date
+    cc.datetime = commit.author_date
+    cc.date = commit.author_date.date()
+    cc.time = commit.author_date.time()
 
     cc.files = {}
     cc.files.added = {}

@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </head>
 <body>
+    {% set ns = namespace() %}
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -25,8 +26,24 @@
             <div class="col-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
                 <h2>Repository: {{ repo_path }}</h2>
                 <nav id="list-commits" class="nav nav-pills flex-column">
+                {% set ns.lastdate = none %}
                 {% for commit in changes %}
-                    <a class="nav-link" href="#item-{{commit.hash}}">{{ commit.date }}</a>
+                    {% if ns.lastdate != commit.date %}
+                        {% if ns.lastdate != none %}
+                        </nav>      <!-- close previous nav group for date {{lastdate}} -->               
+                        {% endif %}
+                        {% set ns.lastdate = commit.date %}
+                        <li class="nav-item badge text-bg-secondary"><h3>{{ commit.date }}</h3></li>
+                        <nav class="nav nav-pills flex-column"> <!-- create new nav group for date {{lastdate}}-->
+                    {% endif %}
+                    <a class="nav-link" href="#item-{{commit.hash}}">
+                        {{ commit.time }} 
+                        {{" | "}}
+                        {% if commit.message|length > 30  %}
+                        {{ commit.message[:30] }}...</a>
+                        {% else %}
+                        {{ commit.message }}</a>
+                        {% endif %}
                 {% endfor %}
                 </nav>           
             </div>
@@ -38,7 +55,7 @@
                         <li id="item-{{commit.hash}}"></li>
                             <div class="card w-100">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ commit.date }}</h5>
+                                    <h5 class="card-title">{{ commit.datetime }}</h5>
                                     <div class="card-text">
                                         <table>
                                             <tr><th scope="row">Message</th><td>{{ commit.message }}</td></tr>
