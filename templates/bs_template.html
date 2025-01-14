@@ -103,7 +103,24 @@
                             </div>
                             <div class="offcanvas-body">
                                 <div class="code">
-                                    <pre>{{ diff|e }}</pre>
+                                    <pre class="m-0">
+{% set difflines = diff.split('\n') -%}
+{% for line in difflines -%}
+{% if line.startswith("@@") -%}
+{% set parts = line.split('@@', 2) -%}
+<span class="text-info">{{ parts[0] + '@@' + parts[1] + '@@' }}</span>
+{% if parts|length > 2 and parts[2].strip() != '' -%}
+<span>{{ parts[2]|e }}</span>
+{% endif %}
+{% elif line.startswith("+") -%}
+<span class="text-success m-0">{{ line|e -}}</span>
+{% elif line.startswith("-") -%}
+<span class="text-danger m-0">{{ line|e -}}</span>
+{% else -%}
+<span>{{ line|e -}}</span>
+{% endif -%}
+{% endfor -%}
+                                    </pre>
                                 </div>
                             </div>
                           </div>                        
