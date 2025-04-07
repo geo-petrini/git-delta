@@ -4,6 +4,7 @@ from datetime import datetime
 from pydriller import Repository
 import benedict
 from jinja2 import Environment, FileSystemLoader
+from binaryornot.helpers import is_binary_string
 
 def get_changes(repo_path):
     changes = []
@@ -30,7 +31,16 @@ def _get_commit_changes(commit):
 
     for file in commit.modified_files:
         if file.change_type.name == "ADD":
-            cc.files.added[file.filename] = file.source_code
+            str_to_check = file.source_code.encode('utf-8')[:16] if file.source_code else None
+            if is_binary_string(str_to_check):
+                cc.files.added[file.filename] = 'Binary Data'
+            elif file.source_code == None:
+                cc.files.added[file.filename] = 'NO DATA'
+            elif len(file.source_code) > 1024:
+                cc.files.added[file.filename] = file.source_code[:1024] + "[FILE TRUCATED]"
+            else:
+                cc.files.added[file.filename] = file.source_code
+            # print(f'is_binary_string:  {is_binary_string(str_to_check)}, file: {file.filename}, str_to_check: {str_to_check}' )           
         if file.change_type.name == "DELETE":
             cc.files.deleted.append(file.filename)
         if file.change_type.name == "MODIFY":
@@ -108,7 +118,7 @@ if __name__ == "__main__":
                     # history = get_git_changes(repo_path)
                     # print_commit_history(repo_path, history)
                     changes = get_changes(repo_path)
-                    print_history(repo_path, changes)
+                    # print_history(repo_path, changes)
                     generate_html(repo_path, changes, output_path=f"{repo_path.replace('/', '_')}_history.html")
                 except ValueError as e:
                     print(e)
